@@ -5,7 +5,7 @@
         (alto (8 0) (9 1) (10 1))))
 
     (deftemplate humedad 0 50 %humedad
-        ((seco (5 1) (10 0))
+        ((seco (0 1) (5 1) (10 0))
         (humedo (5 0) (15 1) (30 1) (40 0))
         (mojado (35 0) (40 1) (50 1))))
 
@@ -21,40 +21,44 @@
         (extralarga (80 0) (100 1) (120 1))))
 
     (deftemplate Secado
-        ((peso ?)
-        (humedad ?)))
+        (slot peso(type FLOAT))
+        (slot humedad(type FLOAT)))
 
 
 ;FUZZIFY
     (deffunction fuzzify (?fztemplate ?value ?delta)
+
         (bind ?low (get-u-from ?fztemplate))
-        (bind ?hi (get-u-to ?fztemplate))
+        (bind ?hi  (get-u-to   ?fztemplate))
+
         (if (<= ?value ?low)
-            then
+          then
             (assert-string
-                (format nil "(%s (%g 1.0) (%g 0.0))" ?fztemplate ?low ?delta))
-            else
-                (if (>= ?value ?hi)
-                    then
-                    (assert-string
-                        (format nil "(%s (%g 0.0) (%g 1.0))"
-                            ?fztemplate (- ?hi ?delta) ?hi))
-                else
-                    (assert-string
-                        (format nil "(%s (%g 0.0) (%g 1.0) (%g 0.0))"
-                            ?fztemplate (max ?low (- ?value ?delta))
-                            ?value (min ?hi (+ ?value ?delta)) ))
-    )))
+              (format nil "(%s (%g 1.0) (%g 0.0))" ?fztemplate ?low ?delta))
+          else
+            (if (>= ?value ?hi)
+              then
+                (assert-string
+                   (format nil "(%s (%g 0.0) (%g 1.0))"
+                               ?fztemplate (- ?hi ?delta) ?hi))
+              else
+                (assert-string
+                   (format nil "(%s (%g 0.0) (%g 1.0) (%g 0.0))"
+                               ?fztemplate (max ?low (- ?value ?delta))
+                               ?value (min ?hi (+ ?value ?delta)) ))
+            )
+        )
+  )
 ;RULES
     (defrule leerconsola
-        (Secado ?Secado)
+        (initial-fact)
         =>
         (printout t "Introduzca el peso en kg" crlf)
-        (bind ?peso (read))
-        (fuzzify read ?peso 0.1)
+        (bind ?peso(read))
+        (fuzzify peso ?peso 0)
         (printout t "Introduzca la humedad en % de humedad" crlf)
         (bind ?humedad (read))
-        (fuzzify read ?humedad 0.1))
+        (fuzzify humedad ?humedad 0))
 
     (defrule todoBajo
         (peso bajo)
@@ -110,7 +114,7 @@
         (humedad mojado)
         =>
         (assert(temperatura very alta))
-        (assert(duracionlarga))) 
+        (assert(duracion larga))) 
 
     (defrule todoAlto
         (peso alto)
@@ -121,7 +125,6 @@
 
     (defrule OUTPUTS
         (declare (salience -1))
-            (Secado ?Secado)
             (temperatura ?temperatura)
             (duracion ?duracion)
             =>
@@ -129,7 +132,7 @@
             (bind ?duracion duracion))
     
     (defrule fuzzy1
-        (declare (salience -2))
+        (declare (salience -1))
             (temperatura ?temperatura)
             (duracion ?duracion)
             => 
