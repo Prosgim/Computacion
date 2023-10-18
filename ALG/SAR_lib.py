@@ -7,7 +7,9 @@ import math
 from pathlib import Path
 from typing import Optional, List, Union, Dict
 import pickle
-import ALT_Searcher
+#ALGORÍTMICA
+from spellsuggester import SpellSuggester
+import distancias
 
 class SAR_Indexer:
     """
@@ -66,7 +68,6 @@ class SAR_Indexer:
     ###      CONFIGURACION      ###
     ###                         ###
     ###############################
-
 
     def set_showall(self, v:bool):
         """
@@ -552,10 +553,10 @@ class SAR_Indexer:
         #else: return []
         #ALGORÍTMICA
         else:  
-            suggestedWords = ALT_Searcher.set_spelling(use_spelling, "", 0)
+            suggestedWords = self.set_spelling(use_spelling, distance, threshold)
             result = []
             for word in suggestedWords:
-                result = self.or_posting(result, get_posting_speller(word))
+                result = self.or_posting(result, self.get_posting_speller(word))
 
     #ALGORÍTMICA
     def get_posting_speller(self, term:str, field:Optional[str]=None):
@@ -898,12 +899,23 @@ class SAR_Indexer:
 
         return res
 
+    #ALGORÍTMICA
+   
+    def set_spelling(self, use_spelling:bool, distance:str=None, threshold:int=None):   
+         
+        """
+        self.use_spelling a True activa la corrección ortográfica
+        EN LAS PALABRAS NO ENCONTRADAS, en caso contrario NO utilizará
+        corrección ortográfica
+        input: "use_spell" booleano, determina el uso del corrector.
+        "distance" cadena, nombre de la función de distancia.
+        "threshold" entero, umbral del corrector
+        """
 
-
-
-
-
-
-
-        
-
+        if use_spelling:
+            opcionesSpell = distancias.opcionesSpell
+            vocabulary = list(self.index.keys())
+            speller = SpellSuggester(opcionesSpell, vocabulary, distance, threshold)
+            return speller
+        else:
+            return []
