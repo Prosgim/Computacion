@@ -19,9 +19,8 @@
 delimitador    [ \t\n]+
 digito         [0-9]
 constante		({digito}+|\.{digito}+|{digito}+\.{digito}*)
-minus			[a-z]
-mayus			[A-Z]
-identificador	({minus}|{mayus})({minus}|{mayus}|{digito}|\_)*
+letra			[a-zA-Z]
+identificador	(letra)({letra}|{digito}|\_)*
 palreservada	{minus}+
 comentario		\/\/.*\n
 
@@ -69,6 +68,7 @@ comentario		\/\/.*\n
 "if"		{retornar (IF_);	}
 "else"		{retornar (ELSE_);	}
 "while"		{retornar (WHILE_);	}
+"struct"	{retornar (STRUCT_);}
 
 "return"	{retornar ("RETURN_");	}
 

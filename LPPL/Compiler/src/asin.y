@@ -14,7 +14,7 @@
 %token  APAR_ CPAR_ ACOR_ CCOR_ ALLAV_ CLLAV_
 %token  PUNT_ COM_ PYC_
 %token  READ_ PRINT_
-%token  IF_ ELSE_ WHILE_
+%token  IF_ ELSE_ WHILE_ STRUCT_
 %token  RETURN_
 %token  CTE_ ID_
 %error-verbose
@@ -34,7 +34,7 @@ decla   :   declaVar
 
 declaVar:   tipoSimp ID_ PYC_
         |   tipoSimp ID_ ACOR_ CTE_ CCOR_ PYC_
-        |   struct ALLAV_ listCamp CLLAV_ ID_ PYC_
+        |   STRUCT_ ALLAV_ listCamp CLLAV_ ID_ PYC_
         ;
 
 tipoSimp:   INT_

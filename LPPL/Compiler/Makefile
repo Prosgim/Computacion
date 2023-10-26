@@ -22,7 +22,7 @@ asin.c:	$(SRCDIR)/asin.y
 	bison -oasin.c  -d $(SRCDIR)/asin.y
 	mv ./asin.h ./include	
 alex.c:	$(SRCDIR)/alex.l 
-	flex -o alex.c $(SRCDIR)/alex.l 
+	flex -oalex.c $(SRCDIR)/alex.l 
 
 clean:
 	rm -f ./alex.c ./asin.c ./include/asin.h 
