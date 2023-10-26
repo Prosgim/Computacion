@@ -71,7 +71,7 @@ inst    : ALLAV_ listInst CLLAV_
         | instIter
         ;
 
-instExpre: expre PYC
+instExpre: expre PYC_
         | PYC_
         ;
 
