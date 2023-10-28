@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "header.h"
+#include "asin.h"
 
 #define  retornar(x) {if (verbosidad) ECHO; return(x);}
 %}
@@ -21,7 +22,6 @@ digito         [0-9]
 constante		({digito}+|\.{digito}+|{digito}+\.{digito}*)
 letra			[a-zA-Z]
 identificador	(letra)({letra}|{digito}|\_)*
-palreservada	{minus}+
 comentario		\/\/.*\n
 
 %%
@@ -72,8 +72,9 @@ comentario		\/\/.*\n
 
 "return"	{retornar ("RETURN_");	}
 
-{constante}       { retornar (CTE_);      }
+{constante}		{ retornar (CTE_);      }
 {identificador}		{retornar (ID_);	}
+{comentario}		{retornar (COMMENT_);	}
 .	       { yyerror("Caracter desconocido"); }
 
 %%
