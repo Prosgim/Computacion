@@ -1,20 +1,17 @@
-def combinations(elements, n):
-    def backtrack(start, sol):
-        if len(sol) == n:
-            result.append(list(sol))
-            return
-        for i in range(start, len(elements)):
-            sol.append(elements[i])
-            backtrack(i + 1, sol)
-            sol.pop()
-    
-    result = []
-    backtrack(0, [])
-    return result
+def langford(N):
+    def backtrack(seq, num):
+        if num == 0:
+            yield "-".join(map(str, seq))
+        else:
+            for i in range(len(seq) - num - 1):
+                if seq[i] == 0 and seq[i + num + 1] == 0:
+                    seq[i] = seq[i + num + 1] = num
+                    yield from backtrack(seq, num - 1)
+                    seq[i] = seq[i + num + 1] = 0
 
-elements = ['tomate', 'queso', 'anchoas', 'aceitunas']
-n = 3
+    seq = [0] * (2 * N)
+    yield from backtrack(seq, N)
 
-combinations_list = combinations(elements, n)
-for combination in combinations_list:
-    print(combination)
+N = 4  # Cambia N al valor deseado
+for solution in langford(N):
+    print(solution)
