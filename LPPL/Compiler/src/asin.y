@@ -17,7 +17,6 @@
 %token  IF_ ELSE_ WHILE_ STRUCT_
 %token  RETURN_
 %token  CTE_ ID_
-%error-verbose
 
 %%
 
