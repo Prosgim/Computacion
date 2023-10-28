@@ -93,10 +93,4 @@ if __name__ == "__main__":
                 searcher.solve_and_show(query)
             query = input("query: ")
     
-    def set_spelling(self, use_spelling:bool, distance:str=None, threshold:int=None):   
-        if use_spelling:
-            opcionesSpell = distancias.opcionesSpell
-            speller = SpellSuggester(opcionesSpell, searcher.keys, distance, threshold)
-            return speller
-        else:
-            return[]
+    

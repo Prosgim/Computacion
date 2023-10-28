@@ -13,9 +13,9 @@
   Estas opciones evitan "warnings" innecesarios y permiten obtener el
   numero de linea actual en la variable global "yylineno".
 -----------------------------------------------------------------------------*/
-%option noinput
-%option nounput
-%option yylineno
+%option noinput       
+%option nounput       
+%option yylineno  
 
 delimitador    [ \t\n]
 digito         [0-9]
