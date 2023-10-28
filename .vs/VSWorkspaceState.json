@@ -1,6 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\LPPL",
+    "\\LPPL\\Compiler",
+    "\\LPPL\\Compiler\\include",
+    "\\LPPL\\Compiler\\src"
   ],
   "PreviewInSolutionExplorer": false
 }
