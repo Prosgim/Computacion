@@ -7,7 +7,7 @@
 #include "header.h"
 %}
 
-%token  MAS_  MENOS_  POR_  DIV_ ASIG_
+%token  MAS_  MENOS_  OPINCR_ OPDECR_ POR_  DIV_ ASIG_
 %token  AND_ OR_ IGUAL_ DIST_ NEG_
 %token  MAYOR_ MENOR_ MAYORIG_ MENORIG_
 %token  INT_ BOOL_ TRUE_ FALSE_
@@ -45,7 +45,7 @@ listCamp:   tipoSimp ID_ PYC_
         |   listCamp tipoSimp ID_ PYC_
         ;
 
-declaFunc:  tipoSimp ID_ APAR_ paramForm CPAR_ ALLAV_ declaVarLocal listInst RETURN_  APAR_ expre CPAR_ PYC_ CLLAV_
+declaFunc:  tipoSimp ID_ APAR_ paramForm CPAR_ ALLAV_ declaVarLocal listInst RETURN_ expre PYC_ CLLAV_
         ;
 
 paramForm: 
@@ -76,7 +76,7 @@ instExpre: expre PYC_
         ;
 
 instEntSal: READ_ APAR_ ID_ CPAR_ PYC_
-        | PRINT_ APAR_ expre CPAR_
+        | PRINT_ APAR_ expre CPAR_ PYC_
         ;
 
 instSelec: IF_ APAR_ expre CPAR_ inst ELSE_ inst
@@ -123,6 +123,7 @@ expreSufi: const
         | ID_ PUNT_ ID_
         | ID_ ACOR_ expre CCOR_
         | ID_ APAR_ paramAct CPAR_
+        ;
 
 const   : CTE_
         | TRUE_
@@ -164,8 +165,8 @@ opUna   : MAS_
         | NEG_
         ;
 
-opIncre : MAS_ MAS_
-        | MENOS_ MENOS_
+opIncre : OPINCR_
+        | OPDECR_
         ;
 
 %%

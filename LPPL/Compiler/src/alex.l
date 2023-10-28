@@ -17,17 +17,21 @@
 %option nounput       
 %option yylineno  
 
-delimitador    [ \t\n]+
+delimitador    [ \t\n]
 digito         [0-9]
+letra          [a-zA-Z]
 constante		({digito}+|\.{digito}+|{digito}+\.{digito}*)
-letra			[a-zA-Z]
-identificador	(letra)({letra}|{digito}|\_)*
-comentario		\/\/.*\n
+identificador	{letra}({letra}|{digito}|\_)*
+comentario		"//".*"\n"
 
 %%
+{comentario}      { if (verbosidad) ECHO;}
 {delimitador}  { if (verbosidad) ECHO; }
+
 "+"			{ retornar (MAS_);      }
 "-"         { retornar (MENOS_);    }
+"++"        { retornar (OPINCR_);   }
+"--"        { retornar (OPDECR_);   }
 "*"         { retornar (POR_);      }
 "/"         { retornar (DIV_);      }
 "="			{ retornar (ASIG_);	}
@@ -50,12 +54,12 @@ comentario		\/\/.*\n
 "false"		{ retornar (FALSE_);	}
 
 
-"("			{ retornar (APAR_);     }
-")"         { retornar (CPAR_);     }
+"("			{ retornar (APAR_); }
+")"         { retornar (CPAR_); }
 "["			{ retornar (ACOR_);	}
 "]"			{ retornar (CCOR_);	}
-"{"			{ retornar (CLLAV_);	}
-"}"			{ retornar (CLLAV_);	}
+"{"			{ retornar (ALLAV_);}
+"}"			{ retornar (CLLAV_);}
 
 
 "."			{retornar (PUNT_);	}
@@ -68,13 +72,13 @@ comentario		\/\/.*\n
 "if"		{retornar (IF_);	}
 "else"		{retornar (ELSE_);	}
 "while"		{retornar (WHILE_);	}
-"struct"	{retornar (STRUCT_);}
+"struct"    {retornar (STRUCT_);}
 
-"return"	{retornar ("RETURN_");	}
+"return"	{retornar (RETURN_);	}
 
-{constante}		{ retornar (CTE_);      }
+{constante}       { retornar (CTE_);    }
 {identificador}		{retornar (ID_);	}
-{comentario}		{retornar (COMMENT_);	}
+
 .	       { yyerror("Caracter desconocido"); }
 
 %%
