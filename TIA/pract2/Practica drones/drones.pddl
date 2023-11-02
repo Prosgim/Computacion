@@ -1,137 +1,131 @@
 
-;FALTA:
-;MÉTODO DE RECARGAR BATERÍAS
-;TENER EN CUENTA EN LOS MÉTODOS EN LOS QUE SE GASTA BATERÍA QUE NO SE DEBEN
-;REALIZAR SI NO LES DA LA BATERÍA
-;MÁS MÉTODOS SEGURAMENTE PERO ES LA 1 AM Y YO QUE SÉ QUIERO DORMIR
-;HOLA PAU DEL FUTURO DALE BRODER TÍO TÚ PUEDES CON TODO BRODER
-;DEBUGGING Y TESTING (LO DE SIEMPRE VAMOS)
-
-
 (define (domain drones)
 
 ;REQUIREMENTS
 (:requirements :durative-actions :typing :fluents :negative-preconditions)
 
 ;TIPES AND HIERARCHY
-(:types puntoRecarga zvr - lugar 
+(:types dron paquete puntoRecarga lugar - object
  pesPaquete ligPaquete - paquete
  pesDron ligDron - dron
- autonomia bateriaMaxima velocidadRecarga costeRecarga - bateria
- - object
 )
 
 ;PREDICATES
 (:predicates 
-    (en ?x - (either dron paquete) ?l - lugar)
-    (destinoDe ?p - paquete)
+    (en ?x - (either dron paquete puntoRecarga) ?l - lugar)
     (sinPaquete ?d - dron)
     (llevaPaquete ?d - dron ?p - paquete)
-    (disponible ?l - lugar)
+    (disponible ?disp - puntoRecarga)
+    (esZVR ?zvr)
 )
 
 ;FUNCTIONS
-(:functions 
+(:functions  
     (coste-recargas)
-    (total-time)    
-    (cargandoPaqueteLigero)
-    (cargandoPaquetePesado)
-    (entregandoPaquete)
     (recogidaLig)
     (recogidaPes)
-    (entrega ?d - dron ?p - paquete)
+    (entrega)
     (bateriaMaxima ?d - dron)
     (autonomia ?d - dron)
-    (velocidadRecarga ?d - dron)
+    (duracionRecarga ?d - dron)
     (costeRecarga ?d - dron)
     (velocidad ?d - dron)
-    (distancia ?ori - lugar ?dest - lugar)
-    
+    (distancia ?ori - lugar ?dest - lugar) 
 )
 
 ;ACTIONS
 (:durative-action cargarPaqueteLigero
     :parameters (?p - ligPaquete ?d - dron ?l - lugar)
-    :duration (= ?duration (cargandoPaqueteLigero))
+    :duration (= ?duration (recogidaLig))
     :condition (and 
-        (at start (= (en ?d) (en ?p)))
+        (at start (and (en ?d ?l) (en ?p ?l)))
         (at start (sinPaquete ?d))
-        (at start (disponible ?l))
         (over all (en ?d ?l))
     )
     :effect (and 
-        (over all (not (disponible ?l))) ;Estación ocupada durante la carga
-        (at end ((disponible ?l))) ;Estación liberada al terminar
         (at end (not (sinPaquete ?d))) ;El dron lleva ahora un paquete
         (at end (llevaPaquete ?d ?p)) ;El dron d lleva el paquete p
-        (at end (= total-time (+ total-time ?duration))) ;La duración total se incrementa
+        ; (at end (assign total-time (+ total-time recogidaLig))) ;La duración total se incrementa
     )
 )
 
 (:durative-action cargarPaquetePesado
     :parameters (?p - pesPaquete ?d - pesDron ?l - lugar)
-    :duration (= ?duration (cargandoPaquetePesado))
+    :duration (= ?duration (recogidaPes))
     :condition (and 
-        (at start (= (en ?d) (en ?p)))
+        (at start (and (en ?d ?l) (en ?p ?l)))
         (at start (sinPaquete ?d))
-        (at start (disponible ?l))
         (over all (en ?d ?l))
     )
     :effect (and 
-        (over all (not (disponible ?l))) ;Estación ocupada durante la carga
-        (at end ((disponible ?l))) ;Estación liberada al terminar
         (at end (not (sinPaquete ?d))) ;El dron lleva ahora un paquete
         (at end (llevaPaquete ?d ?p)) ;El dron d lleva el paquete p
-        (at end (= total-time (+ total-time ?duration))) 
+        ; (at end (assign total-time (+ total-time recogidaPes)))
     )
 )
 
-(:durative-action volar
-    :parameters (?d - dron ?b - autonomia ?ori - lugar ?dest - lugar)
+(:durative-action volarLigero
+    :parameters (?d - ligDron ?ori - lugar ?dest - lugar)
     :duration (= ?duration (/ (distancia ?ori ?dest) (velocidad ?d)))
     :condition (and 
-        (at start (<= (distancia ?ori ?dest) ?b))
-
+        (at start (en ?d ?ori))
+        (at start (< (distancia ?ori ?dest) (autonomia ?d))) 
     )
     :effect (and 
+        (at start (not (en ?d ?ori)))
         (at end (en ?d ?dest)) ;El dron ha llegado a su destino
-        (at end (- ?b (distancia ?ori ?dest))) ;Se pierde batería
-        (at end (= total-time (+ total-time ?duration)))
+        (at end (assign (autonomia ?d) (- (autonomia ?d) (distancia ?ori ?dest)))) ;Se pierde batería
+        ; (at end (assign total-time (+ total-time (/ (distancia ?ori ?dest) (velocidad ?d)))))
+    )
+)
+
+(:durative-action volarPesado
+    :parameters (?d - pesDron ?ori - lugar ?dest - lugar)
+    :duration (= ?duration (/ (distancia ?ori ?dest) (velocidad ?d)))
+    :condition (and 
+        (at start (en ?d ?ori))
+        (at start (<= (distancia ?ori ?dest) (autonomia ?d)))
+        ; (at start (not (esZVR ?ori)))
+        (at start (not (esZVR ?dest)))       
+    )
+    :effect (and 
+        (at start (not (en ?d ?ori)))
+        (at end (en ?d ?dest)) ;El dron ha llegado a su destino
+        (at end (assign (autonomia ?d) (- (autonomia ?d) (distancia ?ori ?dest)))) ;Se pierde batería
+        ; (at end (assign total-time (+ total-time (/ (distancia ?ori ?dest) (velocidad ?d)))))
     )
 )
 
 (:durative-action entregarPaquete
-    :parameters (?paquete - p ?d - dron ?l - lugar)
-    :duration (= ?duration entregandoPaquete)
+    :parameters (?p - paquete ?d - dron ?l - lugar)
+    :duration (= ?duration (entrega))
     :condition (and
-        (at start not(sinPaquete ?d))
-        (over all (=(destinoDe ?p) ?l))
+        (at start (llevaPaquete ?d ?p))
+        (over all (en ?d ?l))
     )
     :effect (and 
         (at end (sinPaquete ?d)) ;El dron ya no lleva ningún paquete
         (at end (not (llevaPaquete ?d ?p))) ;El dron ya no lleva el paquete p
-        (at end (= total-time (+ total-time ?duration)))
+        (at end (en ?p ?l)) ; El paquete p ha sido entregado
+        ; (at end (assign total-time (+ total-time entrega)))
     )
 )
 
 (:durative-action recargarBateria
-    :parameters ()
-    :duration (= ?duration 1)
+    :parameters (?d - dron ?pr - puntoRecarga ?l - lugar)
+    :duration (= ?duration (duracionRecarga ?d))
     :condition (and 
-        (at start (and 
-        ))
-        (over all (and 
-        ))
-        (at end (and 
-        ))
+        (at start (disponible ?pr))
+        (at start (sinPaquete ?d))
+        (at start (and (en ?d ?l) (en ?pr ?l)))
     )
-    :effect (and 
-        (at start (and 
-        ))
-        (at end (and 
-        ))
+    :effect (and
+        (over all (not (disponible ?pr))) ;El punto de recarga no está disponible
+        (at end (disponible ?pr)) ;El punto de recarga está disponible
+        (at end (assign (autonomia ?d) (bateriaMaxima ?d))) ;La autonomía se recarga al máximo
+        (at end (assign coste-recargas (+ coste-recargas (costeRecarga ?d)))) ;El coste total de recargas se incrementa
+        ; (at end (assign total-time (+ total-time (duracionRecarga ?d))))
     )
 )
-
 
 )
