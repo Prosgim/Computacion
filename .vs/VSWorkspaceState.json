@@ -1,6 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\LPPL\\Compiler",
+    "\\LPPL\\Compiler\\src",
+    "\\TIA"
   ],
+  "SelectedNode": "\\ALG",
   "PreviewInSolutionExplorer": false
 }
