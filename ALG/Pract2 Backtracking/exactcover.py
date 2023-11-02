@@ -1,6 +1,5 @@
 import subsetsum
 # AUTORES: PAU ROS GIMENO
-# (poner aquí el nombre o 2 nombres del equipo de prácticas
 
 def exact_cover(listaConjuntos, U=None):
 
@@ -9,12 +8,21 @@ def exact_cover(listaConjuntos, U=None):
         U = set().union(*listaConjuntos) 
     
     def backtracking(sol, cjtAcumulado):
-        # COMPLETAR
-        # consulta los métodos isdisjoint y union de la clase set,
-        # podrías necesitarlos
-        
-        yield from backtracking([], set())
+        if cjtAcumulado == U:
+            yield sol
+        if len(sol) >= len(listaConjuntos):
+            return
+        cjt = listaConjuntos[len(sol)]
+        if set.isdisjoint(cjtAcumulado, cjt):
+            sol.append(1)
+            yield from backtracking(sol, cjtAcumulado.union(cjt))
+            sol.pop()
+        sol.append(0)
+        yield from backtracking(sol, cjtAcumulado)
+        sol.pop            
+    yield from backtracking([], set())
 
+                
 if __name__ == "__main__":
     listaConjuntos = [{"casa","coche","gato"},
                       {"casa","bici"},
@@ -27,3 +35,15 @@ if __name__ == "__main__":
                       {"casa"}]
     for solucion in exact_cover(listaConjuntos):
         print(solucion)
+        
+
+
+
+
+U = {1, 2, 3, 4, 5}
+datos = [{1, 2, 3}, {2, 3, 4}, {4, 5}, {1, 5}, {2, 3}]
+soluciones = exact_cover(U, datos)
+
+for solucion in soluciones:
+    print(solucion)
+

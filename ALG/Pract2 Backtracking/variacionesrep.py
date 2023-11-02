@@ -1,5 +1,4 @@
 # AUTORES: PAU ROS GIMENO
-# (poner aquí el nombre o 2 nombres del equipo de prácticas
 
 def variacionesRepeticion(elementos, cantidad):
     
@@ -29,25 +28,23 @@ def permutaciones(elementos):
     for p in backtracking([]):
         yield p
         
-def combinations(elements, n):
-    def backtrack(start, sol):
+def combinations(elementos, n):
+    def backtracking(start, sol):
         if len(sol) == n:
-            result.append(list(sol))
-            return
-        for i in range(start, len(elements)):
-            sol.append(elements[i])
-            backtrack(i + 1, sol)
+            yield sol.copy()
+        for i in range(start, len(elementos)):
+            sol.append(elementos[i])
+            yield from backtracking(i + 1, sol)
             sol.pop()
-    
-    result = []
-    backtrack(0, [])
-    return result        
+
+    yield from backtracking(0, [])
+       
     
     
     
 if __name__ == "__main__":
     for n in (1,2,3):
-        print('Variaciones con repeticion n =',n)
+        print("Variaciones con repeticion de: ", n)
         for x in variacionesRepeticion(['tomate','queso','anchoas'], n):
             print(x)
     
@@ -57,6 +54,6 @@ if __name__ == "__main__":
     
     for n in (1,2,3):
         print("Combinaciones de: ", n)            
-        for x in combinations(['tomate','queso','anchoas'], n):
+        for x in combinations(['tomate','queso','anchoas', 'aceitunas'], n):
             print(x)
-    # probar las actividades 1 y 2 para permutaciones y combinaciones
+
