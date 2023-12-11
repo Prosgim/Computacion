@@ -1,3 +1,5 @@
+;AUTOR: PAU ROS GIMENO
+
 ;TEMPLATES
     (deftemplate peso 0 10 kg
         ((bajo (0 1) (3 1) (5 0))

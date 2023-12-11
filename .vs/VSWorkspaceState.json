@@ -1,10 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\LPPL\\Compiler",
-    "\\LPPL\\Compiler\\src",
-    "\\TIA"
+    "\\ALG",
+    "\\ALG\\Pract2 Backtracking"
   ],
-  "SelectedNode": "\\ALG",
+  "SelectedNode": "\\ALG\\Pract3 Ramificación y Poda",
   "PreviewInSolutionExplorer": false
 }
