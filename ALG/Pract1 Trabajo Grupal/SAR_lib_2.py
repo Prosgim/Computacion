@@ -7,8 +7,6 @@ import math
 from pathlib import Path
 from typing import Optional, List, Union, Dict
 import pickle
-from spellsuggester import SpellSuggester
-import distancias
 
 ##################################################
 ##                                              ##
@@ -42,7 +40,7 @@ class SAR_Indexer:
         Constructor de la classe SAR_Indexer.
 
         Incluye todas las variables necesaria para todas las ampliaciones.
-        Puedes aÃ±adir mÃ¡s variables si las necesitas 
+        Puedes añadir más variables si las necesitas 
 
         args permite acceder a los argumento de SAR_Indexer
 
@@ -56,13 +54,13 @@ class SAR_Indexer:
         self.ptindex = {} # hash para el indice permuterm.
         self.docs = {} # diccionario de terminos --> clave: entero(docid),  valor: ruta del fichero.
         self.weight = {} # hash de terminos para el pesado, ranking de resultados.
-        self.articles = {} # hash de articulos --> clave entero (artid), valor: la info necesaria para diferencia los artÃ­culos dentro de su fichero
+        self.articles = {} # hash de articulos --> clave entero (artid), valor: la info necesaria para diferencia los artículos dentro de su fichero
         self.tokenizer = re.compile("\W+") # expresion regular para hacer la tokenizacion
         self.stemmer = SnowballStemmer('spanish') # stemmer en castellano
         self.show_all = False # valor por defecto, se cambia con self.set_showall()
         self.show_snippet = False # valor por defecto, se cambia con self.set_snippet()
         self.use_stemming = False # valor por defecto, se cambia con self.set_stemming()
-        #ALGORÍTMICA
+        #ALGOR�TMICA
         self.use_spelling = False
         self.speller = None
 
@@ -130,7 +128,7 @@ class SAR_Indexer:
 
     def save_info(self, filename:str):
         """
-        Guarda la informaciÃ³n del Ã­ndice en un fichero en formato binario
+        Guarda la información del índice en un fichero en formato binario
         
         """
         info = [self.all_atribs] + [getattr(self, atr) for atr in self.all_atribs]
@@ -139,7 +137,7 @@ class SAR_Indexer:
 
     def load_info(self, filename:str):
         """
-        Carga la informaciÃ³n del Ã­ndice desde un fichero en formato binario
+        Carga la información del índice desde un fichero en formato binario
         
         """
         #info = [self.all_atribs] + [getattr(self, atr) for atr in self.all_atribs]
@@ -159,10 +157,10 @@ class SAR_Indexer:
         """
 
         Args:
-            article (Dict): diccionario con la informaciÃ³n de un artÃ­culo
+            article (Dict): diccionario con la información de un artículo
 
         Returns:
-            bool: True si el artÃ­culo ya estÃ¡ indexado, False en caso contrario
+            bool: True si el artículo ya está indexado, False en caso contrario
         """
         return article['url'] in self.urls
 
@@ -170,7 +168,7 @@ class SAR_Indexer:
     def index_dir(self, root:str, **args):
         """
         
-        Recorre recursivamente el directorio "root", tambiÃ©n puede ser un Ãºnico fichero.
+        Recorre recursivamente el directorio "root", también puede ser un único fichero.
         NECESARIO PARA TODAS LAS VERSIONES
         
         Recorre recursivamente el directorio "root" e indexa su contenido
@@ -205,7 +203,7 @@ class SAR_Indexer:
         
     def parse_article(self, raw_line:str) -> Dict[str, str]:
         """
-        Crea un diccionario a partir de una linea que representa un artÃ­culo del crawler
+        Crea un diccionario a partir de una linea que representa un artículo del crawler
 
         Args:
             raw_line: una linea del fichero generado por el crawler
@@ -233,8 +231,8 @@ class SAR_Indexer:
         """
         Indexa el contenido de un fichero.
         
-        input: "filename" es el nombre de un fichero generado por el Crawler cada lÃ­nea es un objeto json
-            con la informaciÃ³n de un artÃ­culo de la Wikipedia
+        input: "filename" es el nombre de un fichero generado por el Crawler cada línea es un objeto json
+            con la información de un artículo de la Wikipedia
 
         NECESARIO PARA TODAS LAS VERSIONES
 
@@ -279,12 +277,12 @@ class SAR_Indexer:
 
     def set_spelling(self, use_spelling:bool, distance:str=None, threshold:int=None):
         """
-        self.use_spelling a True activa la correcciÃ³n ortogrÃ¡fica
-        EN LAS PALABRAS NO ENCONTRADAS, en caso contrario NO utilizarÃ¡
-        correcciÃ³n ortogrÃ¡fica
+        self.use_spelling a True activa la corrección ortográfica
+        EN LAS PALABRAS NO ENCONTRADAS, en caso contrario NO utilizará
+        corrección ortográfica
         
         input: "use_spell" booleano, determina el uso del corrector.
-                "distance" cadena, nombre de la funciÃ³n de distancia.
+                "distance" cadena, nombre de la función de distancia.
                 "threshold" entero, umbral del corrector
         """
 
@@ -451,18 +449,14 @@ class SAR_Indexer:
             print(self.index[term])
             return self.index[term]
         """
-        r1 = []
-        if term in self.index:
-            r1 = self.index[term] #[field].get(term, [])
-            print(r1)
-            return r1
+        r1 = self.index[field].get(term, [])
         if r1 != []: return r1
         if self.speller != None:
             print(term)
             suggestedWords = self.speller.suggest(term)
             print(suggestedWords)
             for word in suggestedWords:
-                r1 = self.or_posting(r1, self.get_posting(word))
+                r1 = self.or_posting(r1, self.get_posting_speller(word))
             print(r1)
         return r1
 
@@ -549,7 +543,7 @@ class SAR_Indexer:
 
     def solve_and_count(self, ql:List[str], verbose:bool=True) -> List:
         """
-        Resuelve una serie de consultas y devuelve el nÃºmero de resultados, opcionalmente los muestra en el terminal. 
+        Resuelve una serie de consultas y devuelve el número de resultados, opcionalmente los muestra en el terminal. 
 
         param:  "ql": lista de queries que se debe resolver.
 		"verbose": si True muestra el resultado por el termina, por defecto True
@@ -602,7 +596,7 @@ class SAR_Indexer:
 
         param:  "query": query que se debe resolver.
 
-        return: el numero de artÃ­culo recuperadas, para la opcion -T
+        return: el numero de artículo recuperadas, para la opcion -T
 
         """
         

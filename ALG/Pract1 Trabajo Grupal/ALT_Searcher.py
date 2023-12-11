@@ -93,4 +93,4 @@ if __name__ == "__main__":
                 searcher.solve_and_show(query)
             query = input("query: ")
     
-    
+
