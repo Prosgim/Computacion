@@ -34,10 +34,10 @@ def voraz_x_pieza(costMatrix):
     score = 0
     solution = []
     for i in range(costMatrix.shape[0]):
-        best_in_row = 9999
+        best_in_row = costMatrix[i][0]
         column = 0
         for j in range(costMatrix.shape[1]):
-            if costMatrix[i][j] < best_in_row and j not in solution:
+            if costMatrix[i][j] <= best_in_row and j not in solution:
                 best_in_row = costMatrix[i][j]
                 column = j
         score += best_in_row
@@ -51,15 +51,15 @@ def voraz_x_instante(costMatrix):
     score = 0
     solution = []
     for j in range(costMatrix.shape[1]):
-        best_in_column = 9999
+        best_in_column = costMatrix[0][j] 
         row = 0
         for i in range(costMatrix.shape[0]):
-            if costMatrix[i][j] < best_in_column and j not in solution:
+            if costMatrix[i][j] <= best_in_column and i not in solution:
                 best_in_column = costMatrix[i][j]
-                row = j
+                row = i
         score += best_in_column
         solution.append(row)
-     
+        
     return score,solution
 
 def voraz_x_coste(costMatrix):
